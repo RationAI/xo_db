@@ -73,3 +73,11 @@ function xo_insert_or_get_file($name, $request_id, $status, $root, $biopsy) : ar
     }
     return $file;
 }
+
+function xo_files_erase() {
+    global $db;
+    $db->run("DELETE FROM seen_files");
+    $db->run("DELETE FROM file_events");
+    $db->run("DELETE FROM xopat_session");
+    $db->run("DELETE FROM files");
+}
