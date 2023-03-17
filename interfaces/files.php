@@ -34,6 +34,71 @@ function _xo_update_file($by_col, $col_name, $col_type, $status=null, $root=null
     }
 }
 
+function xo_file_biopsy_get($biopsy) {
+    global $db;
+    return $db->read_all("SELECT * FROM files WHERE biopsy=?", [
+        [$biopsy, PDO::PARAM_INT]
+    ]);
+}
+
+function xo_file_biopsy_root_get_by_missing_event($biopsy, $root, $event_name, $cond_value=null) {
+    return xo_file_get_by_missing_event("biopsy=? AND root=?",
+        [[$biopsy, PDO::PARAM_INT], [$root, PDO::PARAM_STR]], $event_name, $cond_value);
+}
+
+function xo_file_name_get_by_missing_event($name, $event_name, $cond_value=null) {
+    return xo_file_get_by_missing_event("name=?", [[$name, PDO::PARAM_STR]], $event_name, $cond_value);
+}
+
+function xo_file_name_list_get_by_missing_event($file_list, $event_name, $cond_value=null) : array {
+    $qry = implode(",", array_map(fn($x) => '?', $file_list));
+    return xo_file_get_by_missing_event("name IN ($qry)",
+        array_map(fn($x) => [$x, PDO::PARAM_STR], $file_list), $event_name, $cond_value);
+}
+
+/**
+ * @param $file_cond string SQL condition on files table
+ * @param $params array array of param definitions for wildcards in the SQL statement
+ * @param $event_name string event name to search for
+ * @param $data_cond_val string|null optionally also require checking againts the event value,
+ *   can contain SQL string pattern checking
+ * @return mixed array of file records that have no event name record, possibly with constraint of
+ *   not having only event with data=$data_cond_val
+ * @throws Exception
+ */
+function xo_file_get_by_missing_event(string $file_cond, array $params, string $event_name, string $data_cond_val=null) {
+    global $db;
+
+    $cond_qry = "";
+    $params[]=[$event_name, PDO::PARAM_STR];
+    if ($data_cond_val) {
+        $cond_qry = " AND data LIKE ?";
+        $params[]=[$data_cond_val, PDO::PARAM_STR];
+    }
+
+    return $db->read_all("SELECT * FROM files WHERE {$file_cond} AND id NOT IN 
+        (SELECT file_id FROM file_events WHERE event=?{$cond_qry})", $params);
+}
+
+function xo_file_name_get_latest_event($name, $event_name) {
+    global $db;
+    return $db->read("SELECT * FROM files f
+                            INNER JOIN file_events e ON f.id = e.file_id
+                            WHERE f.name=? AND e.event=?
+                            ORDER BY e.tstamp DESC LIMIT 1", [
+        [$name, PDO::PARAM_STR],
+        [$event_name, PDO::PARAM_STR]
+    ]);
+}
+
+function xo_files_by_id($id_list) : array {
+    global $db;
+    $qry = implode(",", array_map(fn($x) => '?', $id_list));
+    return $db->read_all("SELECT * FROM files WHERE id IN ($qry)", [
+        ... array_map(fn($x) => [$x, PDO::PARAM_INT], $id_list)
+    ]);
+}
+
 function xo_file_name_event($name, $event, $data) {
     global $db;
     $db->run("INSERT INTO file_events(file_id, event, tstamp, data) VALUES ((SELECT id FROM files WHERE name=?), ?, NOW(), ?)", [
