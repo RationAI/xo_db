@@ -69,15 +69,16 @@ function xo_file_get_by_missing_event(string $file_cond, array $params, string $
     global $db;
 
     $cond_qry = "";
-    $params[]=[$event_name, PDO::PARAM_STR];
+    $params=[[$event_name, PDO::PARAM_STR], ...$params];
     if ($data_cond_val) {
-        $cond_qry = " AND data NOT LIKE ?";
+        $cond_qry = " AND (fe.data IS NULL OR fe.data NOT LIKE ?)";
         $params[]=[$data_cond_val, PDO::PARAM_STR];
     }
 
     //file_events are never updated but created with changes, so valid event is always the latest timestamp
-    return $db->read_all("SELECT * FROM files WHERE {$file_cond} AND id NOT IN 
-        (SELECT file_id FROM file_events WHERE event=?{$cond_qry} ORDER BY tstamp DESC LIMIT 1)", $params);
+    return $db->read_all("SELECT * FROM files
+        LEFT OUTER JOIN (SELECT * FROM file_events WHERE event=? ORDER BY tstamp DESC LIMIT 1) fe ON files.id=fe.file_id
+        WHERE {$file_cond}{$cond_qry}", $params);
 }
 
 function xo_file_name_get_latest_event($name, $event_name) {
