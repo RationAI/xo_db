@@ -25,7 +25,7 @@ function _xo_update_file($by_col, $col_name, $col_type, $status=null, $root=null
     $params = [];
     if ($status) { $qry[]="status=?"; $params[]=[$status, PDO::PARAM_STR]; }
     if ($root) { $qry[]="root=?"; $params[]=[$root, PDO::PARAM_STR]; }
-    if ($biopsy) { $qry[]="biopsy=?"; $params[]=[$biopsy, PDO::PARAM_INT]; }
+    if ($biopsy) { $qry[]="biopsy=?"; $params[]=[$biopsy, PDO::PARAM_STR]; }
 
     if (count($params) > 0) {
         $qry = implode(",", $qry);
@@ -37,13 +37,13 @@ function _xo_update_file($by_col, $col_name, $col_type, $status=null, $root=null
 function xo_file_biopsy_get($biopsy) {
     global $db;
     return $db->read_all("SELECT * FROM files WHERE biopsy=?", [
-        [$biopsy, PDO::PARAM_INT]
+        [$biopsy, PDO::PARAM_STR]
     ]);
 }
 
 function xo_file_biopsy_root_get_by_missing_event($biopsy, $root, $event_name, $cond_value=null) {
     return xo_file_get_by_missing_event("biopsy=? AND root=?",
-        [[$biopsy, PDO::PARAM_INT], [$root, PDO::PARAM_STR]], $event_name, $cond_value);
+        [[$biopsy, PDO::PARAM_STR], [$root, PDO::PARAM_STR]], $event_name, $cond_value);
 }
 
 function xo_file_name_get_by_missing_event($name, $event_name, $cond_value=null) {
@@ -60,8 +60,7 @@ function xo_file_name_list_get_by_missing_event($file_list, $event_name, $cond_v
  * @param $file_cond string SQL condition on files table
  * @param $params array array of param definitions for wildcards in the SQL statement
  * @param $event_name string event name to search for
- * @param $data_cond_val string|null optionally also require checking againts the event value,
- *   can contain SQL string pattern checking
+ * @param $data_cond_val string|null optionally also require data is NOT equal to the cond value, can use wildcards
  * @return mixed array of file records that have no event name record, possibly with constraint of
  *   not having only event with data=$data_cond_val
  * @throws Exception
@@ -72,12 +71,13 @@ function xo_file_get_by_missing_event(string $file_cond, array $params, string $
     $cond_qry = "";
     $params[]=[$event_name, PDO::PARAM_STR];
     if ($data_cond_val) {
-        $cond_qry = " AND data LIKE ?";
+        $cond_qry = " AND data NOT LIKE ?";
         $params[]=[$data_cond_val, PDO::PARAM_STR];
     }
 
+    //file_events are never updated but created with changes, so valid event is always the latest timestamp
     return $db->read_all("SELECT * FROM files WHERE {$file_cond} AND id NOT IN 
-        (SELECT file_id FROM file_events WHERE event=?{$cond_qry})", $params);
+        (SELECT file_id FROM file_events WHERE event=?{$cond_qry} ORDER BY tstamp DESC LIMIT 1)", $params);
 }
 
 function xo_file_name_get_latest_event($name, $event_name) {
@@ -123,7 +123,7 @@ function xo_file_id_get_events($file_id) {
     ]);
 }
 
-function xo_insert_or_get_file($name, $request_id, $status, $root, $biopsy) : array {
+function xo_insert_or_get_file($name, $status, $root, $biopsy) : array {
     global $db;
     $file = xo_get_file_by_name($name);
     if (empty($file)) {
@@ -131,10 +131,24 @@ function xo_insert_or_get_file($name, $request_id, $status, $root, $biopsy) : ar
             [$name, PDO::PARAM_STR],
             [$status, PDO::PARAM_STR],
             [$root, PDO::PARAM_STR],
-            [$biopsy, PDO::PARAM_INT],
+            [$biopsy, PDO::PARAM_STR],
         ]);
         $file = xo_get_file_by_name($name);
-        xo_file_id_event($file["id"], "upload", $request_id);
+    }
+    return $file;
+}
+
+function xo_insert_or_ignore_file($name, $status, $root, $biopsy): ?array {
+    global $db;
+    $file = xo_get_file_by_name($name);
+    if (empty($file)) {
+        $db->run("INSERT INTO files(name, created, status, root, biopsy) VALUES (?, NOW(), ?, ?, ?)", [
+            [$name, PDO::PARAM_STR],
+            [$status, PDO::PARAM_STR],
+            [$root, PDO::PARAM_STR],
+            [$biopsy, PDO::PARAM_STR],
+        ]);
+        return null;
     }
     return $file;
 }

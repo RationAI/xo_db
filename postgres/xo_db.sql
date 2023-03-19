@@ -5,7 +5,7 @@
 -- Dumped from database version 14.1
 -- Dumped by pg_dump version 15.2
 
--- Started on 2023-03-12 12:46:21
+-- Started on 2023-03-19 14:57:03
 
 SET statement_timeout = 0;
 SET lock_timeout = 0;
@@ -19,7 +19,7 @@ SET client_min_messages = warning;
 SET row_security = off;
 
 --
--- TOC entry 3386 (class 1262 OID 16384)
+-- TOC entry 3388 (class 1262 OID 16384)
 -- Name: postgresDB; Type: DATABASE; Schema: -; Owner: postgres
 --
 
@@ -61,8 +61,8 @@ SET default_table_access_method = heap;
 --
 
 CREATE TABLE public.access (
-    user_id integer NOT NULL,
-    root character varying(255) NOT NULL
+                               user_id integer NOT NULL,
+                               root character varying(255) NOT NULL
 );
 
 
@@ -74,10 +74,10 @@ ALTER TABLE public.access OWNER TO postgres;
 --
 
 CREATE TABLE public.auth (
-    user_id integer NOT NULL,
-    type character varying(63) NOT NULL,
-    type_id character varying(63) NOT NULL,
-    secret character varying(255)
+                             user_id integer NOT NULL,
+                             type character varying(63) NOT NULL,
+                             type_id character varying(63) NOT NULL,
+                             secret character varying(255)
 );
 
 
@@ -89,10 +89,10 @@ ALTER TABLE public.auth OWNER TO postgres;
 --
 
 CREATE TABLE public.file_events (
-    file_id integer NOT NULL,
-    event character varying(63),
-    data text,
-    tstamp timestamp without time zone
+                                    file_id integer NOT NULL,
+                                    event character varying(63),
+                                    data text,
+                                    tstamp timestamp without time zone
 );
 
 
@@ -104,19 +104,19 @@ ALTER TABLE public.file_events OWNER TO postgres;
 --
 
 CREATE TABLE public.files (
-    id integer NOT NULL,
-    name character varying(255) NOT NULL,
-    created timestamp without time zone,
-    status character varying(31),
-    root character varying(255),
-    biopsy integer
+                              id integer NOT NULL,
+                              name character varying(255) NOT NULL,
+                              created timestamp without time zone,
+                              status character varying(31),
+                              root character varying(255),
+                              biopsy character varying(32)
 );
 
 
 ALTER TABLE public.files OWNER TO postgres;
 
 --
--- TOC entry 3388 (class 0 OID 0)
+-- TOC entry 3390 (class 0 OID 0)
 -- Dependencies: 211
 -- Name: COLUMN files.status; Type: COMMENT; Schema: public; Owner: postgres
 --
@@ -125,21 +125,12 @@ COMMENT ON COLUMN public.files.status IS 'File processing status. ''uploaded'', 
 
 
 --
--- TOC entry 3389 (class 0 OID 0)
+-- TOC entry 3391 (class 0 OID 0)
 -- Dependencies: 211
 -- Name: COLUMN files.root; Type: COMMENT; Schema: public; Owner: postgres
 --
 
 COMMENT ON COLUMN public.files.root IS 'Root path for the file. Biopsy can further define sub-directories relative to root.';
-
-
---
--- TOC entry 3390 (class 0 OID 0)
--- Dependencies: 211
--- Name: COLUMN files.biopsy; Type: COMMENT; Schema: public; Owner: postgres
---
-
-COMMENT ON COLUMN public.files.biopsy IS 'Biopsy number from hospital, used to derive file paths.';
 
 
 --
@@ -159,7 +150,7 @@ CREATE SEQUENCE public.file_id_seq
 ALTER TABLE public.file_id_seq OWNER TO postgres;
 
 --
--- TOC entry 3391 (class 0 OID 0)
+-- TOC entry 3392 (class 0 OID 0)
 -- Dependencies: 212
 -- Name: file_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: postgres
 --
@@ -173,8 +164,8 @@ ALTER SEQUENCE public.file_id_seq OWNED BY public.files.id;
 --
 
 CREATE TABLE public.seen_files (
-    user_id integer NOT NULL,
-    file_id integer NOT NULL
+                                   user_id integer NOT NULL,
+                                   file_id integer NOT NULL
 );
 
 
@@ -186,10 +177,10 @@ ALTER TABLE public.seen_files OWNER TO postgres;
 --
 
 CREATE TABLE public.users (
-    id integer NOT NULL,
-    name character varying(63) NOT NULL,
-    email character varying(255),
-    created timestamp with time zone
+                              id integer NOT NULL,
+                              name character varying(63) NOT NULL,
+                              email character varying(255),
+                              created timestamp with time zone
 );
 
 
@@ -212,7 +203,7 @@ CREATE SEQUENCE public.users_id_seq
 ALTER TABLE public.users_id_seq OWNER TO postgres;
 
 --
--- TOC entry 3392 (class 0 OID 0)
+-- TOC entry 3393 (class 0 OID 0)
 -- Dependencies: 216
 -- Name: users_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: postgres
 --
@@ -226,10 +217,10 @@ ALTER SEQUENCE public.users_id_seq OWNED BY public.users.id;
 --
 
 CREATE TABLE public.xopat_annotation_data (
-    id integer NOT NULL,
-    annotation_id integer NOT NULL,
-    tstamp timestamp without time zone NOT NULL,
-    data text
+                                              id integer NOT NULL,
+                                              annotation_id integer NOT NULL,
+                                              tstamp timestamp without time zone NOT NULL,
+                                              data text
 );
 
 
@@ -252,7 +243,7 @@ CREATE SEQUENCE public.xopat_annotation_data_id_seq
 ALTER TABLE public.xopat_annotation_data_id_seq OWNER TO postgres;
 
 --
--- TOC entry 3393 (class 0 OID 0)
+-- TOC entry 3394 (class 0 OID 0)
 -- Dependencies: 218
 -- Name: xopat_annotation_data_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: postgres
 --
@@ -266,9 +257,9 @@ ALTER SEQUENCE public.xopat_annotation_data_id_seq OWNED BY public.xopat_annotat
 --
 
 CREATE TABLE public.xopat_annotations (
-    id integer NOT NULL,
-    author_user_id integer,
-    file_id integer
+                                          id integer NOT NULL,
+                                          author_user_id integer,
+                                          file_id integer
 );
 
 
@@ -291,7 +282,7 @@ CREATE SEQUENCE public.xopat_annotations_id_seq
 ALTER TABLE public.xopat_annotations_id_seq OWNER TO postgres;
 
 --
--- TOC entry 3394 (class 0 OID 0)
+-- TOC entry 3395 (class 0 OID 0)
 -- Dependencies: 220
 -- Name: xopat_annotations_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: postgres
 --
@@ -305,9 +296,9 @@ ALTER SEQUENCE public.xopat_annotations_id_seq OWNED BY public.xopat_annotations
 --
 
 CREATE TABLE public.xopat_session (
-    user_id integer NOT NULL,
-    file_id integer NOT NULL,
-    session text
+                                      user_id integer NOT NULL,
+                                      file_id integer NOT NULL,
+                                      session text
 );
 
 
@@ -364,7 +355,16 @@ ALTER TABLE ONLY public.files
 
 
 --
--- TOC entry 3216 (class 2606 OID 16407)
+-- TOC entry 3216 (class 2606 OID 16508)
+-- Name: seen_files seen_files_user_id_file_id_key; Type: CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public.seen_files
+    ADD CONSTRAINT seen_files_user_id_file_id_key UNIQUE (user_id, file_id);
+
+
+--
+-- TOC entry 3218 (class 2606 OID 16407)
 -- Name: users users_email_key; Type: CONSTRAINT; Schema: public; Owner: postgres
 --
 
@@ -373,7 +373,7 @@ ALTER TABLE ONLY public.users
 
 
 --
--- TOC entry 3218 (class 2606 OID 16405)
+-- TOC entry 3220 (class 2606 OID 16405)
 -- Name: users users_name_key; Type: CONSTRAINT; Schema: public; Owner: postgres
 --
 
@@ -382,7 +382,7 @@ ALTER TABLE ONLY public.users
 
 
 --
--- TOC entry 3220 (class 2606 OID 16433)
+-- TOC entry 3222 (class 2606 OID 16433)
 -- Name: users users_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres
 --
 
@@ -391,7 +391,7 @@ ALTER TABLE ONLY public.users
 
 
 --
--- TOC entry 3223 (class 2606 OID 16435)
+-- TOC entry 3225 (class 2606 OID 16435)
 -- Name: xopat_annotation_data xopat_annotation_data_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres
 --
 
@@ -400,7 +400,7 @@ ALTER TABLE ONLY public.xopat_annotation_data
 
 
 --
--- TOC entry 3228 (class 2606 OID 16437)
+-- TOC entry 3230 (class 2606 OID 16437)
 -- Name: xopat_annotations xopat_annotations_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres
 --
 
@@ -425,7 +425,7 @@ CREATE INDEX fki_aci ON public.access USING btree (user_id);
 
 
 --
--- TOC entry 3224 (class 1259 OID 16440)
+-- TOC entry 3226 (class 1259 OID 16440)
 -- Name: fki_aif; Type: INDEX; Schema: public; Owner: postgres
 --
 
@@ -433,7 +433,7 @@ CREATE INDEX fki_aif ON public.xopat_annotations USING btree (file_id);
 
 
 --
--- TOC entry 3225 (class 1259 OID 16441)
+-- TOC entry 3227 (class 1259 OID 16441)
 -- Name: fki_ais; Type: INDEX; Schema: public; Owner: postgres
 --
 
@@ -441,7 +441,7 @@ CREATE INDEX fki_ais ON public.xopat_annotations USING btree (author_user_id);
 
 
 --
--- TOC entry 3226 (class 1259 OID 16442)
+-- TOC entry 3228 (class 1259 OID 16442)
 -- Name: fki_aiu; Type: INDEX; Schema: public; Owner: postgres
 --
 
@@ -457,7 +457,7 @@ CREATE INDEX fki_fci ON public.access USING btree (user_id);
 
 
 --
--- TOC entry 3229 (class 1259 OID 16444)
+-- TOC entry 3231 (class 1259 OID 16444)
 -- Name: fki_fsi; Type: INDEX; Schema: public; Owner: postgres
 --
 
@@ -489,7 +489,7 @@ CREATE INDEX fki_uin ON public.seen_files USING btree (user_id);
 
 
 --
--- TOC entry 3230 (class 1259 OID 16448)
+-- TOC entry 3232 (class 1259 OID 16448)
 -- Name: fki_usi; Type: INDEX; Schema: public; Owner: postgres
 --
 
@@ -497,7 +497,7 @@ CREATE INDEX fki_usi ON public.xopat_session USING btree (user_id);
 
 
 --
--- TOC entry 3221 (class 1259 OID 16449)
+-- TOC entry 3223 (class 1259 OID 16449)
 -- Name: fki_x; Type: INDEX; Schema: public; Owner: postgres
 --
 
@@ -505,7 +505,7 @@ CREATE INDEX fki_x ON public.xopat_annotation_data USING btree (annotation_id);
 
 
 --
--- TOC entry 3231 (class 1259 OID 16450)
+-- TOC entry 3233 (class 1259 OID 16450)
 -- Name: user; Type: INDEX; Schema: public; Owner: postgres
 --
 
@@ -513,7 +513,7 @@ CREATE INDEX "user" ON public.xopat_session USING btree (user_id);
 
 
 --
--- TOC entry 3233 (class 2606 OID 16451)
+-- TOC entry 3235 (class 2606 OID 16451)
 -- Name: auth access_user_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: postgres
 --
 
@@ -522,7 +522,7 @@ ALTER TABLE ONLY public.auth
 
 
 --
--- TOC entry 3237 (class 2606 OID 16456)
+-- TOC entry 3239 (class 2606 OID 16456)
 -- Name: xopat_annotation_data aia; Type: FK CONSTRAINT; Schema: public; Owner: postgres
 --
 
@@ -531,7 +531,7 @@ ALTER TABLE ONLY public.xopat_annotation_data
 
 
 --
--- TOC entry 3238 (class 2606 OID 16461)
+-- TOC entry 3240 (class 2606 OID 16461)
 -- Name: xopat_annotations aif; Type: FK CONSTRAINT; Schema: public; Owner: postgres
 --
 
@@ -540,7 +540,7 @@ ALTER TABLE ONLY public.xopat_annotations
 
 
 --
--- TOC entry 3239 (class 2606 OID 16466)
+-- TOC entry 3241 (class 2606 OID 16466)
 -- Name: xopat_annotations aiu; Type: FK CONSTRAINT; Schema: public; Owner: postgres
 --
 
@@ -549,7 +549,7 @@ ALTER TABLE ONLY public.xopat_annotations
 
 
 --
--- TOC entry 3232 (class 2606 OID 16471)
+-- TOC entry 3234 (class 2606 OID 16471)
 -- Name: access fci; Type: FK CONSTRAINT; Schema: public; Owner: postgres
 --
 
@@ -558,7 +558,7 @@ ALTER TABLE ONLY public.access
 
 
 --
--- TOC entry 3240 (class 2606 OID 16476)
+-- TOC entry 3242 (class 2606 OID 16476)
 -- Name: xopat_session fsi; Type: FK CONSTRAINT; Schema: public; Owner: postgres
 --
 
@@ -567,7 +567,7 @@ ALTER TABLE ONLY public.xopat_session
 
 
 --
--- TOC entry 3234 (class 2606 OID 16481)
+-- TOC entry 3236 (class 2606 OID 16481)
 -- Name: file_events fsin; Type: FK CONSTRAINT; Schema: public; Owner: postgres
 --
 
@@ -576,7 +576,7 @@ ALTER TABLE ONLY public.file_events
 
 
 --
--- TOC entry 3235 (class 2606 OID 16486)
+-- TOC entry 3237 (class 2606 OID 16486)
 -- Name: seen_files inf; Type: FK CONSTRAINT; Schema: public; Owner: postgres
 --
 
@@ -585,7 +585,7 @@ ALTER TABLE ONLY public.seen_files
 
 
 --
--- TOC entry 3236 (class 2606 OID 16491)
+-- TOC entry 3238 (class 2606 OID 16491)
 -- Name: seen_files uin; Type: FK CONSTRAINT; Schema: public; Owner: postgres
 --
 
@@ -594,7 +594,7 @@ ALTER TABLE ONLY public.seen_files
 
 
 --
--- TOC entry 3241 (class 2606 OID 16496)
+-- TOC entry 3243 (class 2606 OID 16496)
 -- Name: xopat_session usi; Type: FK CONSTRAINT; Schema: public; Owner: postgres
 --
 
@@ -603,7 +603,7 @@ ALTER TABLE ONLY public.xopat_session
 
 
 --
--- TOC entry 3387 (class 0 OID 0)
+-- TOC entry 3389 (class 0 OID 0)
 -- Dependencies: 4
 -- Name: SCHEMA public; Type: ACL; Schema: -; Owner: postgres
 --
@@ -612,7 +612,7 @@ REVOKE USAGE ON SCHEMA public FROM PUBLIC;
 GRANT ALL ON SCHEMA public TO PUBLIC;
 
 
--- Completed on 2023-03-12 12:46:22
+-- Completed on 2023-03-19 14:57:04
 
 --
 -- PostgreSQL database dump complete
