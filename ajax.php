@@ -21,6 +21,9 @@ function send($data=null) {
     die();
 }
 
+die("Ajax has no API. For Annotations, use annotations.php endpoint.");
+
+
 
 
 

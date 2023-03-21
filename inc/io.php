@@ -45,7 +45,6 @@ class Database {
             $stmt->bindValue($i++, $input[0], $input[1]);
         }
         $this->try($stmt->execute(), true);
-
         return $stmt;
     }
 
@@ -75,6 +74,10 @@ class Database {
             throw new Exception(implode("-", $this->pdo->errorInfo()));
         }
         return $result;
+    }
+
+    public function lastInsertId() {
+        return $this->pdo->lastInsertId();
     }
 }
 
