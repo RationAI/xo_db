@@ -91,3 +91,12 @@ function xo_file_seen_by($filename, $user_id) {
     ]);
 }
 
+function xp_store_session($filename, $user_id, $session) {
+    global $db;
+    $db->run("INSERT INTO xopat_session (user_id,file_id,session) VALUES (?, (SELECT id FROM files WHERE name LIKE ?), ?) ON CONFLICT DO NOTHING", [
+        [$user_id, PDO::PARAM_INT],
+        [$filename, PDO::PARAM_STR],
+        [$session, PDO::PARAM_STR],
+    ]);
+}
+
