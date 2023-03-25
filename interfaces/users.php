@@ -72,12 +72,14 @@ function xo_get_user_by_with_auth(string $name, string $value, string $auth_id):
 /**
  * @throws Exception
  */
-function xo_file_list_not_seen_by_user($file_list, $user_id) : array {
+function xo_get_files_and_their_meta_for_user($file_list, $user_id) : array {
     global $db;
     $qry = implode(",", array_map(fn($x) => '?', $file_list));
-    return $db->read("SELECT * FROM files f 
-        LEFT OUTER JOIN (SELECT * FROM seen_files WHERE user_id=?) t ON f.id=t.file_id 
-        WHERE f.name IN ($qry) AND t.file_id IS NULL", [
+    return $db->read_all("SELECT * FROM files f 
+        LEFT OUTER JOIN (SELECT file_id AS seen FROM seen_files WHERE user_id=?) t ON f.id=t.seen 
+        LEFT OUTER JOIN (SELECT * FROM xopat_session WHERE user_id=?) s ON f.id=s.file_id 
+        WHERE f.name IN ($qry)", [
+        [$user_id, PDO::PARAM_INT],
         [$user_id, PDO::PARAM_INT],
         ... array_map(fn($x) => [$x, PDO::PARAM_STR], $file_list)
     ]);
@@ -93,10 +95,12 @@ function xo_file_seen_by($filename, $user_id) {
 
 function xp_store_session($filename, $user_id, $session) {
     global $db;
-    $db->run("INSERT INTO xopat_session (user_id,file_id,session) VALUES (?, (SELECT id FROM files WHERE name LIKE ?), ?) ON CONFLICT DO NOTHING", [
+    $db->run("INSERT INTO xopat_session (user_id,file_id,session) 
+            VALUES (?, (SELECT id FROM files WHERE name LIKE ?), ?) 
+            ON CONFLICT (user_id,file_id) DO UPDATE SET session=EXCLUDED.session", [
         [$user_id, PDO::PARAM_INT],
         [$filename, PDO::PARAM_STR],
-        [$session, PDO::PARAM_STR],
+        [$session, PDO::PARAM_STR]
     ]);
 }
 
