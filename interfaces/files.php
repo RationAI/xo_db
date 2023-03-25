@@ -159,5 +159,6 @@ function xo_files_erase() {
     $db->run("DELETE FROM seen_files");
     $db->run("DELETE FROM file_events");
     $db->run("DELETE FROM xopat_session");
+    $db->run("DELETE FROM xopat_annotations");
     $db->run("DELETE FROM files");
 }

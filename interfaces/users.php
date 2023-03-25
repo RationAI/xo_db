@@ -78,6 +78,7 @@ function xo_get_files_and_their_meta_for_user($file_list, $user_id) : array {
     return $db->read_all("SELECT * FROM files f 
         LEFT OUTER JOIN (SELECT file_id AS seen FROM seen_files WHERE user_id=?) t ON f.id=t.seen 
         LEFT OUTER JOIN (SELECT * FROM xopat_session WHERE user_id=?) s ON f.id=s.file_id 
+        LEFT OUTER JOIN (SELECT event, data AS event_data , file_id FROM file_events) e ON f.id=e.file_id 
         WHERE f.name IN ($qry)", [
         [$user_id, PDO::PARAM_INT],
         [$user_id, PDO::PARAM_INT],
