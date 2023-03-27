@@ -63,7 +63,9 @@ function xo_get_user_by(string $name, string $value): array {
  */
 function xo_get_user_by_with_auth(string $name, string $value, string $auth_id): array {
     global $db;
-    return $db->read("SELECT * FROM users u LEFT OUTER JOIN auth a ON u.id=a.user_id WHERE u.$name=? AND a.type_id=? LIMIT 1", [
+    return $db->read("SELECT * FROM users u 
+            LEFT OUTER JOIN access acc ON u.id=acc.user_id
+            LEFT OUTER JOIN auth a ON u.id=a.user_id WHERE u.$name=? AND a.type_id=? LIMIT 1", [
         [$value, PDO::PARAM_STR],
         [$auth_id, PDO::PARAM_STR]
     ]);

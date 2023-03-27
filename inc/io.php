@@ -3,7 +3,7 @@
 global $db;
 if (isset($db)) return;
 
-require_once XO_DB_ROOT . 'inc/config.php';
+require_once XO_DB_ROOT . 'config.php';
 global $_DATA;
 if (count($_GET) > 0) {
     $_DATA = $_GET;
