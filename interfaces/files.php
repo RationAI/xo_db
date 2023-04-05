@@ -154,6 +154,20 @@ function xo_insert_or_ignore_file($name, $status, $root, $biopsy): ?array {
     return $file;
 }
 
+function xo_file_erase($name) {
+    $file = xo_get_file_by_name($name);
+    if (! isset($file["id"])) {
+        return false;
+    }
+
+    global $db;
+    $db->run("DELETE FROM seen_files WHERE file_id=?", [[$file["id"], PDO::PARAM_INT]]);
+    $db->run("DELETE FROM file_events WHERE file_id=?", [[$file["id"], PDO::PARAM_INT]]);
+    $db->run("DELETE FROM xopat_session WHERE file_id=?", [[$file["id"], PDO::PARAM_INT]]);
+    $db->run("DELETE FROM xopat_annotations WHERE file_id=?", [[$file["id"], PDO::PARAM_INT]]);
+    $db->run("DELETE FROM files WHERE id=?", [[$file["id"], PDO::PARAM_INT]]);
+}
+
 function xo_files_erase() {
     global $db;
     $db->run("DELETE FROM seen_files");
